@@ -46,6 +46,11 @@ export default function App() {
           --sans:  'Sora', sans-serif;
         }
         body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+        /* global scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148,148,148,.35); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(209,213,219,.55); }
 
         /* NAV */
         .nav { height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--b); background: rgba(13,13,13,.94); backdrop-filter: blur(14px); position: sticky; top: 0; z-index: 20; }
@@ -161,9 +166,9 @@ export default function App() {
         .empty-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
         /* MODAL */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; animation: fIn .18s; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; animation: fIn .18s; overflow-y: auto; }
         @keyframes fIn { from{opacity:0;} to{opacity:1;} }
-        .modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 18px; padding: 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; animation: mIn .22s ease; max-height: 90vh; overflow-y: auto; }
+        .modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 18px; padding: 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; animation: mIn .22s ease; }
         @keyframes mIn { from{opacity:0;transform:scale(.93) translateY(12px);} to{opacity:1;transform:scale(1) translateY(0);} }
         .modal-hd { display: flex; align-items: center; gap: 12px; }
         .modal-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; background: var(--bg3); border: 1px solid var(--b2); display: flex; align-items: center; justify-content: center; color: var(--muted); }
