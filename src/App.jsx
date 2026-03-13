@@ -165,7 +165,7 @@ export default function App() {
         .modal-actions { display: flex; gap: 10px; }
 
         /* FOOTER */
-        .footer { border-top: 1px solid var(--b); padding: 13px 20px; text-align: center; font-size: 11px; color: var(--dim); }
+        .footer {position: fixed; bottom: 0; width: 100%; border-top: 1px solid var(--b); padding: 13px 20px; text-align: center; font-size: 11px; color: var(--dim); }
 
         /* RESPONSIVE */
         @media (max-width: 520px) {
