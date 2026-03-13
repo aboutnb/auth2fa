@@ -6,6 +6,35 @@ import { AddModal } from "./AddModal.jsx";
 export function Manager({ accounts, onAdd, onDelete }) {
   const [modal, setModal] = useState(false);
 
+  const handleExport = () => {
+    if (!accounts || accounts.length === 0) {
+      window.alert("暂无可导出的账户");
+      return;
+    }
+    const payload = accounts.map(
+      ({ id, label, secret, platformId, color }) => ({
+        id,
+        label,
+        secret,
+        platformId,
+        color,
+      }),
+    );
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `2fa-accounts-${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <div className="mgr-hd">
@@ -15,12 +44,21 @@ export function Manager({ accounts, onAdd, onDelete }) {
             已保存 {accounts.length} 个账户，实时显示验证码
           </div>
         </div>
-        <button
-          className="btn-add-acct"
-          onClick={() => setModal(true)}
-        >
-          <IPlus /> 添加
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button
+            className="btn-sec"
+            style={{ paddingInline: 10, whiteSpace: "nowrap" }}
+            onClick={handleExport}
+          >
+            导出 JSON
+          </button>
+          <button
+            className="btn-add-acct"
+            onClick={() => setModal(true)}
+          >
+            <IPlus /> 添加
+          </button>
+        </div>
       </div>
 
       {accounts.length === 0 ? (

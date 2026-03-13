@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { totp } from "../utils/totp.js";
-import { IGithub, IPlus } from "./Icons.jsx";
+import { IPlus } from "./Icons.jsx";
+import { getPlatformById } from "../constants/platforms.jsx";
+import { PlatformPicker } from "./PlatformPicker.jsx";
 
 const COLORS = [
   "#f97316",
@@ -11,28 +13,33 @@ const COLORS = [
   "#f59e0b",
   "#3b82f6",
   "#ef4444",
+  "#fc6d26",
+  "#5865f2",
 ];
 
-export function AddModal({ prefill = "", onAdd, onClose }) {
-  const [username, setUsername] = useState("");
-  const [secret, setSecret] = useState(prefill);
+export function AddModal({ prefill = {}, onAdd, onClose }) {
+  const [platformId, setPlatformId] = useState(prefill.platformId || "github");
+  const [label, setLabel] = useState("");
+  const [secret, setSecret] = useState(prefill.secret || "");
   const [err, setErr] = useState("");
   const ref = useRef();
+  const platform = getPlatformById(platformId);
 
   useEffect(() => {
     ref.current?.focus();
   }, []);
 
   const submit = async () => {
-    if (!username.trim()) return setErr("请输入 GitHub 用户名");
-    if (!secret.trim()) return setErr("请输入 2FA 密钥");
+    if (!label.trim()) return setErr("请输入账户名称");
+    if (!secret.trim()) return setErr("请输入密钥");
     const test = await totp(secret.trim());
-    if (!test) return setErr("密钥格式无效，请重新检查");
+    if (!test) return setErr("密钥格式无效");
     onAdd({
       id: Date.now(),
-      username: username.trim(),
+      label: label.trim(),
       secret: secret.trim(),
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      platformId,
+      color: platform.color || COLORS[Math.floor(Math.random() * COLORS.length)],
     });
   };
 
@@ -43,26 +50,35 @@ export function AddModal({ prefill = "", onAdd, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-hd">
-          <div className="modal-icon">
-            <IGithub size={18} />
+          <div
+            className="modal-icon"
+            style={{
+              background: `${platform.color}18`,
+              border: `1px solid ${platform.color}30`,
+              color: platform.color,
+            }}
+          >
+            <platform.icon />
           </div>
           <div>
-            <div className="modal-title">添加 GitHub 账户</div>
-            <div className="modal-sub">
-              保存账户后可在「账户管理」中查看
-            </div>
+            <div className="modal-title">添加账户</div>
+            <div className="modal-sub">保存 TOTP 账户以便长期管理</div>
           </div>
         </div>
         <div className="field">
-          <label className="field-label">GitHub 用户名</label>
+          <label className="field-label">平台</label>
+          <PlatformPicker value={platformId} onChange={setPlatformId} />
+        </div>
+        <div className="field">
+          <label className="field-label">账户名称</label>
           <div className="field-wrap">
             <input
               ref={ref}
               className="field-input"
-              placeholder="octocat"
-              value={username}
+              placeholder="例如：my@email.com 或 用户名"
+              value={label}
               onChange={(e) => {
-                setUsername(e.target.value);
+                setLabel(e.target.value);
                 setErr("");
               }}
               onKeyDown={(e) => e.key === "Enter" && submit()}
@@ -87,6 +103,7 @@ export function AddModal({ prefill = "", onAdd, onClose }) {
               onKeyDown={(e) => e.key === "Enter" && submit()}
             />
           </div>
+          <div className="field-hint">{platform.hint}</div>
         </div>
         {err && <div className="field-err">{err}</div>}
         <div className="modal-actions">

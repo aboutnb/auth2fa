@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { PERIOD, totp, useTOTP } from "../utils/totp.js";
 import { ICheck, IShield } from "./Icons.jsx";
+import { getPlatformById } from "../constants/platforms.jsx";
+import { PlatformPicker } from "./PlatformPicker.jsx";
 import { Ring } from "./Ring.jsx";
 import { Code } from "./Code.jsx";
 import { CopyBtn } from "./CopyBtn.jsx";
 
 export function QuickGen({ onSave }) {
+  const [platformId, setPlatformId] = useState("github");
   const [raw, setRaw] = useState("");
   const [secret, setSecret] = useState("");
   const [err, setErr] = useState("");
@@ -13,6 +16,7 @@ export function QuickGen({ onSave }) {
   const { code, progress, remaining, flash } = useTOTP(secret);
   const ref = useRef();
   const urgent = remaining <= 7;
+  const platform = getPlatformById(platformId);
 
   useEffect(() => {
     ref.current?.focus();
@@ -47,9 +51,14 @@ export function QuickGen({ onSave }) {
         <div>
           <div className="qg-hero-title">快速生成验证码</div>
           <div className="qg-hero-sub">
-            输入密钥，600ms 内自动生成实时 TOTP 验证码
+            当前平台：{platform.name} · 输入密钥即可生成实时 TOTP 验证码
           </div>
         </div>
+      </div>
+
+      <div className="field">
+        <label className="field-label">平台</label>
+        <PlatformPicker value={platformId} onChange={setPlatformId} />
       </div>
 
       <div className="field">
@@ -97,10 +106,7 @@ export function QuickGen({ onSave }) {
         {err ? (
           <div className="field-err">{err}</div>
         ) : (
-          <div className="field-hint">
-            在 GitHub → Settings → Password and authentication → 2FA
-            设置中找到密钥
-          </div>
+          <div className="field-hint">{platform.hint}</div>
         )}
       </div>
 
@@ -109,7 +115,11 @@ export function QuickGen({ onSave }) {
           <div className="result-top">
             <div className="result-label">
               <div className="live-dot" />
-              实时验证码
+              <span style={{ color: "var(--muted)" }}>实时验证码</span>
+              <span className="result-chip">
+                <platform.icon />
+                {platform.name}
+              </span>
             </div>
             <Ring progress={progress} remaining={remaining} size={38} />
           </div>
@@ -123,7 +133,7 @@ export function QuickGen({ onSave }) {
               />
               <button
                 className="btn-save"
-                onClick={() => onSave(secret)}
+                onClick={() => onSave({ secret, platformId })}
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -166,17 +176,7 @@ export function QuickGen({ onSave }) {
 
       <div className="howto">
         <div className="howto-title">如何获取密钥？</div>
-        {[
-          ["1", "前往 GitHub → Settings"],
-          ["2", "点击 Password and authentication"],
-          ["3", "在 Two-factor methods 选择 Authenticator app"],
-          ["4", "点击「Setup key」查看 Base32 密钥并复制"],
-        ].map(([n, t]) => (
-          <div key={n} className="howto-row">
-            <span className="howto-n">{n}</span>
-            <span>{t}</span>
-          </div>
-        ))}
+        <div className="field-hint">{platform.hint}</div>
       </div>
     </div>
   );

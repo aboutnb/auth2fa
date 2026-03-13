@@ -7,7 +7,13 @@ import { AddModal } from "./components/AddModal.jsx";
 export default function App() {
   const [tab, setTab] = useState("generate");
   const [accounts, setAccounts] = useState([
-    { id: 1, username: "octocat", secret: "JBSWY3DPEHPK3PXP", color: "#f97316" },
+    {
+      id: 1,
+      label: "octocat",
+      secret: "JBSWY3DPEHPK3PXP",
+      platformId: "github",
+      color: "#e8612c",
+    },
   ]);
   const [saveModal, setSaveModal] = useState(null);
 
@@ -87,6 +93,7 @@ export default function App() {
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
         .result-top { display: flex; align-items: center; justify-content: space-between; }
         .result-label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+        .result-chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: var(--bg3); border: 1px solid var(--b); color: var(--muted); font-size: 11px; text-transform: none; letter-spacing: 0; }
         .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: blink 2s infinite; }
         @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
         .result-body { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
@@ -156,13 +163,23 @@ export default function App() {
         /* MODAL */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; animation: fIn .18s; }
         @keyframes fIn { from{opacity:0;} to{opacity:1;} }
-        .modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 18px; padding: 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; animation: mIn .22s ease; }
+        .modal { background: var(--bg2); border: 1px solid var(--b2); border-radius: 18px; padding: 24px; width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 16px; animation: mIn .22s ease; max-height: 90vh; overflow-y: auto; }
         @keyframes mIn { from{opacity:0;transform:scale(.93) translateY(12px);} to{opacity:1;transform:scale(1) translateY(0);} }
         .modal-hd { display: flex; align-items: center; gap: 12px; }
         .modal-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; background: var(--bg3); border: 1px solid var(--b2); display: flex; align-items: center; justify-content: center; color: var(--muted); }
         .modal-title { font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
         .modal-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
         .modal-actions { display: flex; gap: 10px; }
+
+        /* PLATFORM PICKER */
+        .pp { position: relative; }
+        .pp-btn { width: 100%; display: flex; align-items: center; gap: 9px; padding: 10px 13px; background: var(--bg2); border: 1px solid var(--b); border-radius: var(--rs); color: var(--text); font-family: var(--sans); font-size: 14px; cursor: pointer; transition: border-color .15s; text-align: left; }
+        .pp-btn:hover { border-color: var(--b2); }
+        .pp-ico { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; }
+        .pp-drop { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--bg3); border: 1px solid var(--b2); border-radius: var(--r); z-index: 50; overflow: hidden; max-height: 320px; overflow-y: auto; box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+        .pp-opt { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 13px; background: none; border: none; color: var(--muted); font-family: var(--sans); font-size: 13px; cursor: pointer; transition: background .12s, color .12s; text-align: left; }
+        .pp-opt:hover { background: var(--bg4); color: var(--text); }
+        .pp-opt-on { color: var(--text); background: var(--os); }
 
         /* FOOTER */
         .footer {position: fixed; bottom: 0; width: 100%; border-top: 1px solid var(--b); padding: 13px 20px; text-align: center; font-size: 11px; color: var(--dim); }
@@ -192,7 +209,7 @@ export default function App() {
           </div>
           2FA Authenticator
         </div>
-        <span className="nav-pill">GITHUB</span>
+        <span className="nav-pill">TOTP · RFC 6238</span>
       </nav>
 
       <div className="tabs">
@@ -213,13 +230,13 @@ export default function App() {
 
       <main className="main">
         {tab === "generate"
-          ? <QuickGen onSave={secret => { setSaveModal(secret); setTab("manage"); }} />
+          ? <QuickGen onSave={p => { setSaveModal(p); setTab("manage"); }} />
           : <Manager accounts={accounts} onAdd={addAccount} onDelete={id => setAccounts(p => p.filter(a => a.id !== id))} />
         }
       </main>
 
       <footer className="footer">
-        密钥仅保存于内存，刷新后自动清除 · 所有计算在本地完成，不上传任何数据
+        支持 GitHub · Google · Microsoft · AWS · Discord 等任意 TOTP 平台 · 密钥仅保存于内存，所有计算在本地完成
       </footer>
 
       {saveModal !== null && (
