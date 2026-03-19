@@ -1,21 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IShield } from "./components/Icons.jsx";
 import { QuickGen } from "./components/QuickGen.jsx";
 import { Manager } from "./components/Manager.jsx";
 import { AddModal } from "./components/AddModal.jsx";
 
+const STORAGE_KEY = "2fa-accounts";
+
+function loadAccounts() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch { /* corrupt data, fall through */ }
+  return [];
+}
+
 export default function App() {
   const [tab, setTab] = useState("generate");
-  const [accounts, setAccounts] = useState([
-    {
-      id: 1,
-      label: "octocat",
-      secret: "JBSWY3DPEHPK3PXP",
-      platformId: "github",
-      color: "#e8612c",
-    },
-  ]);
+  const [accounts, setAccounts] = useState(loadAccounts);
   const [saveModal, setSaveModal] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+  }, [accounts]);
 
   const addAccount = (a) => { setAccounts(p => [...p, a]); setSaveModal(null); };
 
@@ -241,7 +250,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        支持 GitHub · Google · Microsoft · AWS · Discord 等任意 TOTP 平台 · 密钥仅保存于内存，所有计算在本地完成
+        支持 GitHub · Google · Microsoft · AWS · Discord 等任意 TOTP 平台 · 数据保存于本地浏览器，所有计算在本地完成
       </footer>
 
       {saveModal !== null && (
