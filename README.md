@@ -1,7 +1,12 @@
-# GitHub 2FA Authenticator
+# Auth2FA
 
-仿 Claude 风格的 GitHub 两步验证码生成器（TOTP / RFC 6238），支持移动端和 PC 端。  
-除了 GitHub，还支持 Google、Microsoft、AWS、Cloudflare、Discord 等任意遵循 TOTP 标准的平台。
+[![GitHub](https://img.shields.io/badge/GitHub-aboutnb%2Fauth2fa-blue?logo=github)](https://github.com/aboutnb/auth2fa)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/aboutnb/auth2fa/blob/main/LICENSE)
+
+> **源码地址**：<https://github.com/aboutnb/auth2fa>
+
+轻量级在线两步验证码生成器（TOTP / RFC 6238），支持移动端和 PC 端。  
+支持 GitHub、Google、Microsoft、AWS、Cloudflare、Discord 等任意遵循 TOTP 标准的平台。
 
 **特点**：轻量、离线、本地计算、即开即用。
 
@@ -46,7 +51,7 @@ npm run build
 npm run preview
 ```
 
-## 如何获取 GitHub 2FA 密钥
+## 如何获取 2FA 密钥（以 GitHub 为例）
 
 1. 登录 GitHub → Settings
 2. Password and authentication
