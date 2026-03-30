@@ -70,6 +70,8 @@ export function useTOTP(secret) {
       setProgress(0);
       return;
     }
+    // 同一 30s 窗口内换密钥时 counter 不变，若不复位 prev 则不会 refresh
+    prev.current = -1;
     const tick = () => {
       const now = Date.now() / 1000;
       const elapsed = now % PERIOD;
